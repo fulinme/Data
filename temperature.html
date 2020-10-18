@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>earth temperature</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+
+    <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <script src="./ExcelFormattedGISTEMPData2JS.js"></script>
+        <script src="./chart.js"></script>
+
+    <div id="wrapper">
+    </div>
+   
+
+
+    <script>
+        //console.log(data);
+        console.table(data[0]);
+
+        async function drawLineChart() {
+
+        }
+
+        drawLineChart()
+
+
+        const wrapper = d3.select("#wrapper").append("svg").attr("width", dimensions.width).attr("height", dimensions.height);
+
+
+        const bounds = wrapper.append("g").style("transform", `translate(${dimensions.margin.left
+            }px, ${dimensions.margin.top
+            }px)`);
+
+        const yAccessor = data => data.Glob;
+        const xAccessor = data => data.Year;
+        //console.log(d3.extent(data, yAccessor));
+        const yScale = d3.scaleLinear().domain([-55, 100]/*d3.extent(data, yAccessor)*/).range([dimensions.boundedHeight, 0])
+        //console.log(yScale(75))
+        const xScale = d3.scaleLinear().domain(d3.extent(data, xAccessor)).range([0, dimensions.boundedWidth]);
+
+        
+
+        const lineGenerator = d3.line().x(d => xScale(xAccessor(d))).y(d => yScale(yAccessor(d)));
+
+        const line = bounds.append("path").attr("d", lineGenerator(data)).attr("fill", "none").attr("stroke", (d3.schemeCategory10)[0]).attr("stroke-width", 2);
+
+
+        const yNHemAccessor = data => data.NHem;
+        const yNHemScale = d3.scaleLinear().domain(d3.extent(data, yNHemAccessor)).range([dimensions.boundedHeight, 0])
+        const yNHemlineGenerator = d3.line().x(d => xScale(xAccessor(d))).y(d => yScale(yNHemAccessor(d)));
+        const yNHemline = bounds.append("path").attr("d", yNHemlineGenerator(data)).attr("fill", "none").attr("stroke", (d3.schemeCategory10)[1]).attr("stroke-width", 2);
+
+
+        const ySHemAccessor = data => data.SHem;
+        const ySHemScale = d3.scaleLinear().domain(d3.extent(data, ySHemAccessor)).range([dimensions.boundedHeight, 0])
+        const ySHemlineGenerator = d3.line().x(d => xScale(xAccessor(d))).y(d => yScale(ySHemAccessor(d)));
+        const ySHemline = bounds.append("path").attr("d", ySHemlineGenerator(data)).attr("fill", "none").attr("stroke", (d3.schemeCategory10)[2]).attr("stroke-width", 2);
+
+
+
+
+        const yAxisGenerator = d3.axisLeft().scale(yScale);
+        const yAxis = bounds.append("g").call(yAxisGenerator);
+
+        const xAxisGenerator = d3.axisBottom().scale(xScale);
+        const xAxis = bounds.append("g").call(xAxisGenerator).style("transform", `translateY(${ dimensions.boundedHeight
+}px)`);
+
+
+
+bounds.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - dimensions.margin.left)
+      .attr("x",0 - (dimensions.height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Temperature");     
+
+
+bounds.append("text").attr("transform", "translate(" + (dimensions.width/2) + " ," + (dimensions.height + dimensions.margin.top - 30) + ")").style("text-anchor", "middle").text("Year");
+
+
+
+bounds.append("text").attr("y", dimensions.margin.top).attr("x", dimensions.margin.left + 50).style("fill", (d3.schemeCategory10)[0]).text("Glob");
+
+bounds.append("text").attr("y", dimensions.margin.top + 20).attr("x", dimensions.margin.left + 50).style("fill", (d3.schemeCategory10)[1]).text("NHem");
+
+bounds.append("text").attr("y", dimensions.margin.top + 40).attr("x", dimensions.margin.left + 50).style("fill", (d3.schemeCategory10)[2]).text("SHem");
+
+
+    </script>
+
+  
+
+
+
+</body>
+
+</html>
